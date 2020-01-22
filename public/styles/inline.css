@@ -23,7 +23,7 @@
 html,
 body {
   color: #444;
-  font-family: 'Helvetica', 'Verdana', sans-serif;
+  font-family: "Helvetica", "Verdana", sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   height: 100%;
@@ -54,18 +54,14 @@ body {
   align-content: center;
   align-items: stretch;
   background: #3f51b5;
-  box-shadow:
-    0 4px 5px 0 rgba(0, 0, 0, 0.14),
-    0 2px 9px 1px rgba(0, 0, 0, 0.12),
+  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 2px 9px 1px rgba(0, 0, 0, 0.12),
     0 4px 2px -2px rgba(0, 0, 0, 0.2);
   color: #fff;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  font-size: 20px;
-  height: 56px;
   justify-content: flex-start;
-  padding: 16px 16px 0 16px;
+  padding: 2px 16px 2px 16px;
   position: fixed;
   transition: transform 0.233s cubic-bezier(0, 0, 0.21, 1) 0.1s;
   width: 100%;
@@ -75,16 +71,18 @@ body {
 
 .header h1 {
   flex: 1;
-  font-size: 20px;
+  /*font-size:   min(max(14px, 4vw), 22px);*/
+  font-size: 22px;
   font-weight: 400;
-  margin: 0;
+  padding: 2px 0px 2px 0px;
+  margin: 2px 0px 2px 0px;
 }
 
 .header button {
   border: none;
   cursor: pointer;
   height: 24px;
-  margin-right: 16px;
+  /*margin-right: 16px;*/
   opacity: 0.54;
   outline: none;
   overflow: hidden;
@@ -128,7 +126,8 @@ body {
 }
 
 .card-spinner svg circle {
-  animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+  animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite,
+    rotate 1.6s linear infinite;
   box-sizing: border-box;
   stroke: #3f51b5;
   stroke-width: 3px;
@@ -136,8 +135,12 @@ body {
 }
 
 @keyframes rotate {
-  from { transform: rotate(0); }
-  to { transform: rotate(450deg); }
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(450deg);
+  }
 }
 
 @keyframes line {
@@ -231,7 +234,25 @@ body {
   flex: 1;
   overflow-x: hidden;
   overflow-y: auto;
-  padding-top: 60px;
+  padding-top: 30px;
+}
+
+.main {
+  /*max-width: 400px;*/
+  /*max-height: 200px;
+  border: 1px solid gray;
+*/
+  overflow-y: scroll;
+  /*overflow-x: scroll;*/
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE 10+ */
+}
+
+.main::-webkit-scrollbar {
+  /* WebKit */
+  width: 0px;
 }
 
 .main .fab {
@@ -277,9 +298,7 @@ body {
 .dialog {
   background: #fff;
   border-radius: 2px;
-  box-shadow:
-    0 0 14px rgba(0, 0, 0, 0.24),
-    0 14px 28px rgba(0, 0, 0, 0.48);
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.24), 0 14px 28px rgba(0, 0, 0, 0.48);
   left: 50%;
   min-width: 280px;
   position: absolute;
@@ -326,14 +345,12 @@ body {
 
 .weather-card {
   background: #fff;
-  border-radius: 2px;
-  box-shadow:
-    0 2px 2px 0 rgba(0, 0, 0, 0.14),
-    0 3px 1px -2px rgba(0, 0, 0, 0.2),
+  border-radius: 7px;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2),
     0 1px 5px 0 rgba(0, 0, 0, 0.12);
   box-sizing: border-box;
-  margin: 16px;
-  padding: 16px;
+  margin: 12px;
+  padding: 12px;
   position: relative;
 }
 
@@ -342,6 +359,7 @@ body {
   border: none;
   float: right;
   font-size: x-large;
+  padding: 1px;
 }
 
 .weather-card .location {
@@ -381,16 +399,45 @@ body {
   color: #666;
 }
 
-.weather-card .future {
+.weather-card .future,
+.weather-card .next-few-hrs {
   display: flex;
+  font-weight: 700;
 }
 
-.weather-card .future .oneday {
+.weather-card .next-few-hrs {
+  margin-bottom: 8px;
+}
+
+.next-few-hrs {
+  /*overflow-y: scroll;*/
+  overflow-x: scroll;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE 10+ */
+}
+
+.next-few-hrs::-webkit-scrollbar {
+  width: 0px;
+}
+
+.weather-card .future .oneday,
+.weather-card .next-few-hrs .oneday {
   flex-grow: 1;
   text-align: center;
 }
 
-.weather-card .future .oneday .icon {
+.weather-card .next-few-hrs .oneday {
+  /* min-width: 60px; */
+  border: 1px solid #fafafa;
+  border-radius: 7px;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.06), 0 1px 1px -1px rgba(0, 0, 0, 0.1),
+    0 1px 1px 0 rgba(0, 0, 0, 0.06);
+}
+
+.weather-card .future .oneday .icon,
+.weather-card .next-few-hrs .oneday .icon {
   height: 64px;
   margin-left: auto;
   margin-right: auto;
@@ -398,7 +445,8 @@ body {
 }
 
 .weather-card .future .oneday .temp-high,
-.weather-card .future .oneday .temp-low {
+.weather-card .future .oneday .temp-low,
+.weather-card .next-few-hrs .oneday .temp-high {
   display: inline-block;
 }
 
@@ -410,10 +458,14 @@ body {
  * Media query to adjust size of content for small screens
  */
 
-@media (max-width: 450px) {
+@media (max-width: 700px) {
+  .header h1 {
+    font-size: 16px;
+  }
+
   .weather-card .date,
   .weather-card .description {
-    font-size: 0.9em;
+    font-size: 1em;
   }
 
   .weather-card .current .icon {
@@ -422,10 +474,37 @@ body {
   }
 
   .weather-card .current .visual {
+    font-size: 4em;
+  }
+
+  .weather-card .future .oneday .icon,
+  .weather-card .next-few-hrs .oneday .icon {
+    height: 48px;
+    width: 48px;
+  }
+}
+
+@media (max-width: 450px) {
+  .header h1 {
+    font-size: 14px;
+  }
+
+  .weather-card .date,
+  .weather-card .description {
+    font-size: 0.9em;
+  }
+
+  .weather-card .current .icon {
+    height: 72px;
+    width: 72px;
+  }
+
+  .weather-card .current .visual {
     font-size: 3em;
   }
 
-  .weather-card .future .oneday .icon {
+  .weather-card .future .oneday .icon,
+  .weather-card .next-few-hrs .oneday .icon {
     height: 32px;
     width: 32px;
   }

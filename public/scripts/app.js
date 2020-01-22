@@ -65,6 +65,10 @@ function removeLocation(evt) {
   }
 }
 
+function FtoC(f) {
+  return (f-32) * 5 / 9;
+}
+
 /**
  * Renders the forecast data into the card element.
  *
@@ -98,7 +102,7 @@ function renderForecast(card, data) {
   card.querySelector('.current .icon')
       .className = `icon ${data.currently.icon}`;
   card.querySelector('.current .temperature .value')
-      .textContent = Math.round(data.currently.temperature);
+      .textContent = Math.round(FtoC(data.currently.temperature));
   card.querySelector('.current .humidity .value')
       .textContent = Math.round(data.currently.humidity * 100);
   card.querySelector('.current .wind .value')
@@ -116,7 +120,44 @@ function renderForecast(card, data) {
       .toFormat('t');
   card.querySelector('.current .sunset .value').textContent = sunset;
 
-  // Render the next 7 days.
+  renderNextFewHours(card, data);
+  renderNext7days(card, data);
+  
+  // If the loading spinner is still visible, remove it.
+  const spinner = card.querySelector('.card-spinner');
+  if (spinner) {
+    card.removeChild(spinner);
+  }
+}
+
+/**
+ * Render the next few hours.
+ *
+ * @param {Element} card The card element to update.
+ * @param {Object} data Weather forecast data to update the element with.
+ */
+function renderNextFewHours(card, data) {
+  const futureTiles = card.querySelectorAll('.next-few-hrs .oneday');
+  futureTiles.forEach((tile, index) => {
+    const forecast = data.hourly.data[index + 1];
+    const forecastFor = luxon.DateTime
+        .fromSeconds(forecast.time)
+        .setZone(data.timezone)
+        .toFormat('t');
+    tile.querySelector('.date').textContent = forecastFor;
+    tile.querySelector('.icon').className = `icon ${forecast.icon}`;
+    tile.querySelector('.temp-high .value')
+        .textContent = Math.round(FtoC(forecast.temperature));
+  });
+}
+
+/**
+ * Render the next 7 days.
+ *
+ * @param {Element} card The card element to update.
+ * @param {Object} data Weather forecast data to update the element with.
+ */
+function renderNext7days(card, data) {
   const futureTiles = card.querySelectorAll('.future .oneday');
   futureTiles.forEach((tile, index) => {
     const forecast = data.daily.data[index + 1];
@@ -127,16 +168,10 @@ function renderForecast(card, data) {
     tile.querySelector('.date').textContent = forecastFor;
     tile.querySelector('.icon').className = `icon ${forecast.icon}`;
     tile.querySelector('.temp-high .value')
-        .textContent = Math.round(forecast.temperatureHigh);
+        .textContent = Math.round(FtoC(forecast.temperatureHigh));
     tile.querySelector('.temp-low .value')
-        .textContent = Math.round(forecast.temperatureLow);
+        .textContent = Math.round(FtoC(forecast.temperatureLow));
   });
-
-  // If the loading spinner is still visible, remove it.
-  const spinner = card.querySelector('.card-spinner');
-  if (spinner) {
-    card.removeChild(spinner);
-  }
 }
 
 /**
@@ -163,7 +198,21 @@ function getForecastFromNetwork(coords) {
  */
 function getForecastFromCache(coords) {
   // CODELAB: Add code to get weather forecast from the caches object.
-
+  if (!('caches' in window)) {
+    return null;
+  }
+  const url = `${window.location.origin}/forecast/${coords}`;
+  return caches.match(url)
+      .then((response) => {
+        if (response) {
+          return response.json();
+        }
+        return null;
+      })
+      .catch((err) => {
+        console.error('Error getting data from cache', err);
+        return null;
+      });
 }
 
 /**
@@ -198,7 +247,10 @@ function updateData() {
     const location = weatherApp.selectedLocations[key];
     const card = getForecastCard(location);
     // CODELAB: Add code to call getForecastFromCache
-
+    getForecastFromCache(location.geo)
+        .then((forecast) => {
+          renderForecast(card, forecast);
+        });
     // Get the forecast data from the network.
     getForecastFromNetwork(location.geo)
         .then((forecast) => {
