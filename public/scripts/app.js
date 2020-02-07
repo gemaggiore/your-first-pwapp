@@ -65,8 +65,9 @@ function removeLocation(evt) {
   }
 }
 
-function FtoC(f) {
-  return (f-32) * 5 / 9;
+function T2C(t, units) {
+  if (units == "us") t = (t-32) * 5 / 9;
+  return Math.round(t) + '°';
 }
 
 /**
@@ -90,6 +91,9 @@ function renderForecast(card, data) {
   if (lastUpdated >= data.currently.time) {
     return;
   }
+  
+  const units = data.flags.units;
+        
   cardLastUpdatedElem.textContent = data.currently.time;
 
   // Render the forecast data into the card.
@@ -101,8 +105,8 @@ function renderForecast(card, data) {
   card.querySelector('.date').textContent = forecastFrom;
   card.querySelector('.current .icon')
       .className = `icon ${data.currently.icon}`;
-  card.querySelector('.current .temperature .value')
-      .textContent = Math.round(FtoC(data.currently.temperature));
+  card.querySelector('.current .temperature')
+      .textContent = T2C(data.currently.temperature, units);
   card.querySelector('.current .humidity .value')
       .textContent = Math.round(data.currently.humidity * 100);
   card.querySelector('.current .wind .value')
@@ -120,8 +124,8 @@ function renderForecast(card, data) {
       .toFormat('t');
   card.querySelector('.current .sunset .value').textContent = sunset;
 
-  renderNextFewHours(card, data);
-  renderNext7days(card, data);
+  renderNextFewHours(card, data, units);
+  renderNext7days(card, data, units);
   
   // If the loading spinner is still visible, remove it.
   const spinner = card.querySelector('.card-spinner');
@@ -136,18 +140,18 @@ function renderForecast(card, data) {
  * @param {Element} card The card element to update.
  * @param {Object} data Weather forecast data to update the element with.
  */
-function renderNextFewHours(card, data) {
-  const futureTiles = card.querySelectorAll('.next-few-hrs .oneday');
+function renderNextFewHours(card, data, units) {
+  const futureTiles = card.querySelectorAll('.next-few-hrs .onehour');
   futureTiles.forEach((tile, index) => {
     const forecast = data.hourly.data[index + 1];
     const forecastFor = luxon.DateTime
         .fromSeconds(forecast.time)
         .setZone(data.timezone)
-        .toFormat('t');
+        .toFormat('h a');
     tile.querySelector('.date').textContent = forecastFor;
     tile.querySelector('.icon').className = `icon ${forecast.icon}`;
-    tile.querySelector('.temp-high .value')
-        .textContent = Math.round(FtoC(forecast.temperature));
+    tile.querySelector('.temp-high')
+        .textContent = T2C(forecast.temperature, units);
   });
 }
 
@@ -157,7 +161,7 @@ function renderNextFewHours(card, data) {
  * @param {Element} card The card element to update.
  * @param {Object} data Weather forecast data to update the element with.
  */
-function renderNext7days(card, data) {
+function renderNext7days(card, data, units) {
   const futureTiles = card.querySelectorAll('.future .oneday');
   futureTiles.forEach((tile, index) => {
     const forecast = data.daily.data[index + 1];
@@ -167,10 +171,10 @@ function renderNext7days(card, data) {
         .toFormat('ccc');
     tile.querySelector('.date').textContent = forecastFor;
     tile.querySelector('.icon').className = `icon ${forecast.icon}`;
-    tile.querySelector('.temp-high .value')
-        .textContent = Math.round(FtoC(forecast.temperatureHigh));
-    tile.querySelector('.temp-low .value')
-        .textContent = Math.round(FtoC(forecast.temperatureLow));
+    tile.querySelector('.temp-high')
+        .textContent = T2C(forecast.temperatureHigh, units);
+    tile.querySelector('.temp-low')
+        .textContent = T2C(forecast.temperatureLow, units);
   });
 }
 
